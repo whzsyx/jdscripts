@@ -35,6 +35,9 @@ const JD_API_HOST = 'https://api.m.jd.com/client.action';
 //下面给出两个账号的填写示例（iOS只支持2个京东账号）
 let shareCodes = [ // IOS本地脚本用户这个列表填入你要助力的好友的shareCode
                    //账号一的好友shareCode,不同好友的shareCode中间用@符号隔开
+  'olmijoxgmjutyvo33dqcolstdty3m2gipwiwfti@olmijoxgmjutyrsovl2xalt2tbtfmg6sqldcb3q@e7lhibzb3zek27amgsvywffxx7hxgtzstrk2lba@e7lhibzb3zek32e72n4xesxmgc2m76eju62zk3y@l4ex6vx6yynovp6l5zmgzx4nssii54ewecu36gi@l4ex6vx6yynovp6l5zmgzx4nssii54ewecu36gi',
+  //账号二的好友shareCode,不同好友的shareCode中间用@符号隔开
+  '47m36n7ro5gutdd32u2grn4q5rboku36cstfm6a@mlrdw3aw26j3wgzjipsxgonaoyr2evrdsifsziyvnsb2r54jq34s64sc4it3jlfnejwmtmsuadax2i@eeexxudqtlampbpvmceutaaht5tcftvr6kohuny@e7lhibzb3zek27gfeceqb6wwm45gshcaroxg5ka@e7lhibzb3zek3xxnrskw4mpzstihpk3f7fqziiy@olmijoxgmjutzhazczrfgf75qrbqseqdmb5ey5a',
 ]
 let allMessage = ``;
 let currentRoundId = null;//本期活动id
@@ -92,13 +95,13 @@ async function jdPlantBean() {
       $.myPlantUuid = getParam(shareUrl, 'plantUuid')
       console.log(`\n【京东账号${$.index}（${$.UserName}）的${$.name}好友互助码】${$.myPlantUuid}\n`);
       roundList = $.plantBeanIndexResult.data.roundList;
-      currentRoundId = roundList[1].roundId;//本期的roundId
-      lastRoundId = roundList[0].roundId;//上期的roundId
-      awardState = roundList[0].awardState;
+      currentRoundId = roundList[2].roundId;//本期的roundId
+      lastRoundId = roundList[1].roundId;//上期的roundId
+      awardState = roundList[1].awardState;
       $.taskList = $.plantBeanIndexResult.data.taskList;
       subTitle = `【京东昵称】${$.plantBeanIndexResult.data.plantUserInfo.plantNickName}`;
-      message += `【上期时间】${roundList[0].dateDesc.replace('上期 ', '')}\n`;
-      message += `【上期成长值】${roundList[0].growth}\n`;
+      message += `【上期时间】${roundList[1].dateDesc.replace('上期 ', '')}\n`;
+      message += `【上期成长值】${roundList[1].growth}\n`;
       await receiveNutrients();//定时领取营养液
       await doHelp();//助力
       await doTask();//做日常任务
@@ -535,14 +538,14 @@ function shareCodesFormat() {
     if ($.shareCodesArr[$.index - 1]) {
       newShareCodes = $.shareCodesArr[$.index - 1].split('@');
     } else {
-      console.log(`由于您第${$.index}个京东账号未提供shareCode,将采纳本脚本自带的助力码\n`)
+      //console.log(`由于您第${$.index}个京东账号未提供shareCode,将采纳本脚本自带的助力码\n`)
       const tempIndex = $.index > shareCodes.length ? (shareCodes.length - 1) : ($.index - 1);
       newShareCodes = shareCodes[tempIndex].split('@');
     }
-    //const readShareCodeRes = await readShareCode();
-    //if (readShareCodeRes && readShareCodeRes.code === 200) {
-     // newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];
-    //}
+    const readShareCodeRes = null
+    if (readShareCodeRes && readShareCodeRes.code === 200) {
+      newShareCodes = [...new Set([...newShareCodes, ...(readShareCodeRes.data || [])])];
+    }
     console.log(`第${$.index}个京东账号将要助力的好友${JSON.stringify(newShareCodes)}`)
     resolve();
   })
@@ -577,7 +580,7 @@ function requireConfig() {
       if ($.getdata('jd_plantbean_inviter')) $.shareCodesArr = $.getdata('jd_plantbean_inviter').split('\n').filter(item => !!item);
       console.log(`\nBoxJs设置的${$.name}好友邀请码:${$.getdata('jd_plantbean_inviter') ? $.getdata('jd_plantbean_inviter') : '暂无'}\n`);
     }
-    // console.log(`\n种豆得豆助力码::${JSON.stringify($.shareCodesArr)}`);
+     console.log(`\n种豆得豆助力码::${JSON.stringify($.shareCodesArr)}`);
     console.log(`您提供了${$.shareCodesArr.length}个账号的种豆得豆助力码\n`);
     resolve()
   })
