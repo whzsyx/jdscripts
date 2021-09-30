@@ -1,7 +1,7 @@
 /*
 *京喜工厂开团
 
-1 0 * * * jd_dreamFactory_tuan.js
+cron 20 1,6,22 * * * jd_dreamFactory_tuan.js
 
 *   若5人成团，则5个CK能成团一次，9个CK能成团两次，13个CK能成团三次
 * */
