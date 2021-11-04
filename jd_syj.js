@@ -1,6 +1,6 @@
 /*
-赚京豆脚本，一：做任务 天天领京豆(加速领京豆)、三：赚京豆-瓜分京豆
-Last Modified time: 2021-5-21 17:58:02
+赚京豆脚本，一：做任务 天天领京豆(加速领京豆)
+Last Modified time: 2021-7-3 17:58:02
 活动入口：赚京豆(微信小程序)-赚京豆-签到领京豆
 更新地址：jd_syj.js
 已支持IOS双京东账号, Node.js支持N个京东账号
@@ -46,9 +46,15 @@ const JD_API_HOST = 'https://api.m.jd.com/api';
     $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
     return;
   }
-  //await getAuthorShareCode('');
-  //await getAuthorShareCode('');
-  //await getRandomCode();
+  $.authorTuanList = await getAuthorShareCode('');
+  if (!$.authorTuanList) {
+    $.http.get({url: ''}).then((resp) => {}).catch((e) => $.log('刷新CDN异常', e));
+    await $.wait(1000)
+    $.authorTuanList = await getAuthorShareCode('') || [];
+  }
+  const temp = await getAuthorShareCode('') || []
+  $.authorTuanList = [...$.authorTuanList,...temp]
+  // await getRandomCode();
   for (let i = 0; i < cookiesArr.length; i++) {
     if (cookiesArr[i]) {
       cookie = cookiesArr[i];
@@ -85,7 +91,16 @@ const JD_API_HOST = 'https://api.m.jd.com/api';
           await $.wait(200)
         }
       }
-
+      if ($.canHelp) {
+        $.authorTuanList = [...$.authorTuanList, ...($.body1 || [])];
+        if ($.authorTuanList.length) console.log(`开始账号内部互助 赚京豆-瓜分京豆 活动，如有剩余则给作者和随机团助力`)
+        for (let j = 0; j < $.authorTuanList.length; ++j) {
+          console.log(`账号 ${$.UserName} 开始给作者和随机团 ${$.authorTuanList[j]['assistedPinEncrypted']}助力`)
+          await helpFriendTuan($.authorTuanList[j])
+          if(!$.canHelp) break
+          await $.wait(200)
+        }
+      }
     }
   }
 })()
@@ -705,12 +720,12 @@ function getAuthorShareCode(url) {
       try {
         if (err) {
         } else {
-          $.authorTuanList = []
+          if (data) data = JSON.parse(data)
         }
       } catch (e) {
-        $.logErr(e, resp)
+        // $.logErr(e, resp)
       } finally {
-        resolve();
+        resolve(data);
       }
     })
   })
@@ -723,10 +738,10 @@ async function getRandomCode() {
         body = JSON.parse(body);
         if (body && body['code'] === 200) {
           console.log(`随机取【赚京豆-瓜分京豆】${randomCount}个邀请码成功\n`);
-          $.body = [];
+          $.body = body['data'];
           $.body1 = [];
           $.body.map(item => {
-            // $.body1.push(JSON.parse(item));
+            $.body1.push(JSON.parse(item));
           })
         }
       } catch (e) {
@@ -792,15 +807,15 @@ function TotalBean() {
         } else {
           if (data) {
             data = JSON.parse(data);
-            if (data['retcode'] === "1001") {
+            if (data['retcode'] === 1001) {
               $.isLogin = false; //cookie过期
               return;
             }
-            if (data['retcode'] === "0" && data.data && data.data.hasOwnProperty("userInfo")) {
+            if (data['retcode'] === 0 && data.data && data.data.hasOwnProperty("userInfo")) {
               $.nickName = data.data.userInfo.baseInfo.nickname;
             }
           } else {
-            $.log('京东服务器返回空数据');
+            console.log('京东服务器返回空数据');
           }
         }
       } catch (e) {
