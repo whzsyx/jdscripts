@@ -105,7 +105,7 @@ function showMsg() {
 async function main() {
   try {
     // await userSignIn();//赚京豆-签到领京豆
-    await vvipTask();//赚京豆-加速领京豆
+    // await vvipTask();//赚京豆-加速领京豆
     await distributeBeanActivity();//赚京豆-瓜分京豆
     await showMsg();
   } catch (e) {
@@ -544,27 +544,27 @@ async function distributeBeanActivity() {
     }
     if ($.tuan && $.tuan.hasOwnProperty('assistedPinEncrypted') && $.assistStatus !== 3) {
       $.tuanList.push($.tuan);
-      const code = Object.assign($.tuan, {"time": Date.now()});
-      $.http.post({
-        url: `http://go.chiang.fun/autocommit`,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ "act": "zuan", code }),
-        timeout: 30000
-      }).then((resp) => {
-        if (resp.statusCode === 200) {
-          try {
-            let { body } = resp;
-            body = JSON.parse(body);
-            if (body['code'] === 200) {
-              console.log(`\n【京东账号${$.index}（${$.nickName || $.UserName}）的【赚京豆-瓜分京豆】好友互助码提交成功\n`)
-            } else {
-              console.log(`【赚京豆-瓜分京豆】邀请码提交失败:${JSON.stringify(body)}\n`)
-            }
-          } catch (e) {
-            console.log(`【赚京豆-瓜分京豆】邀请码提交异常:${e}`)
-          }
-        }
-      }).catch((e) => console.log(`【赚京豆-瓜分京豆】邀请码提交异常:${e}`));
+      // const code = Object.assign($.tuan, {"time": Date.now()});
+      // $.http.post({
+      //   url: `http://go.chiang.fun/autocommit`,
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify({ "act": "zuan", code }),
+      //   timeout: 30000
+      // }).then((resp) => {
+      //   if (resp.statusCode === 200) {
+      //     try {
+      //       let { body } = resp;
+      //       body = JSON.parse(body);
+      //       if (body['code'] === 200) {
+      //         console.log(`\n【京东账号${$.index}（${$.nickName || $.UserName}）的【赚京豆-瓜分京豆】好友互助码提交成功\n`)
+      //       } else {
+      //         console.log(`【赚京豆-瓜分京豆】邀请码提交失败:${JSON.stringify(body)}\n`)
+      //       }
+      //     } catch (e) {
+      //       console.log(`【赚京豆-瓜分京豆】邀请码提交异常:${e}`)
+      //     }
+      //   }
+      // }).catch((e) => console.log(`【赚京豆-瓜分京豆】邀请码提交异常:${e}`));
     }
   } catch (e) {
     $.logErr(e);
@@ -773,9 +773,9 @@ function taskTuanUrl(function_id, body = {}) {
 function TotalBean() {
   return new Promise(async resolve => {
     const options = {
-      url: "https://me-api.jd.com/user_new/info/GetJDUserInfoUnion",
+      url: "https://wq.jd.com/user_new/info/GetJDUserInfoUnion?sceneval=2",
       headers: {
-        Host: "me-api.jd.com",
+        Host: "wq.jd.com",
         Accept: "*/*",
         Connection: "keep-alive",
         Cookie: cookie,
